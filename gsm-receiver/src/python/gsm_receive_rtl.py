@@ -92,9 +92,18 @@ class top_block(grc_wxgui.top_block_gui):
         options.key.replace(' ', '').lower(),
         options.configuration.upper())
 
-    self.output = gr.file_sink(gr.sizeof_float, options.output_file)
+    self.output = gr.file_sink(gr.sizeof_float*2, options.output_file)
+    self.output.set_unbuffered(False)
 
-    self.connect(self.src, self.tuner, self.interpolator, self.receiver, self.converter, self.output)
+    #self.connect(self.src, self.tuner, self.interpolator, self.receiver, self.converter, self.output)
+    self.connect((self.src,0),(self.tuner,0))
+    self.connect((self.tuner,0),(self.interpolator,0))
+    self.connect((self.interpolator,0),(self.receiver,0))
+    self.connect((self.tuner,0),(self.output,0))
+    #self.connect((self.receiver,0),(self.converter,0))
+    #self.connect((self.converter,0),(self.output,0))
+
+
 
     def set_ifreq(ifreq):
         self.ifreq = ifreq
@@ -209,7 +218,7 @@ def get_options():
         help="gr-osmosdr device arguments")
     parser.add_option("-s", "--sample-rate", type="eng_float", default=1800000,
         help="set receiver sample rate (default 1800000)")
-    parser.add_option("-f", "--frequency", type="eng_float", default=924.2e6,
+    parser.add_option("-f", "--frequency", type="eng_float", default=947.6e6,
         help="set receiver center frequency")
     parser.add_option("-g", "--gain", type="eng_float", default=None,
         help="set receiver gain")
